@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora IL TEGGIANESE</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcfaf0; padding: 20px; text-align: center; color: #333; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 450px; margin: auto; border: 2px solid #eecb58; }
+        h2 { color: #b8860b; margin-bottom: 5px; }
+        p.subtitle { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #555; }
+        input { width: 90%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 1.2rem; text-align: center; outline: none; transition: border-color 0.3s; }
+        input:focus { border-color: #eecb58; }
+        button { background-color: #eecb58; color: #5d4037; border: none; padding: 15px 25px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button:active { transform: scale(0.98); }
+        .result { margin-top: 25px; text-align: left; background: #fffde7; padding: 20px; border-radius: 15px; border-left: 5px solid #eecb58; display: none; animation: fadeIn 0.5s; }
+        .res-item { margin-bottom: 10px; font-size: 1.1rem; }
+        .res-item span { font-weight: bold; color: #b8860b; }
+        .highlight { background: #eecb58; color: #5d4037; padding: 10px; border-radius: 8px; margin-top: 15px; text-align: center; font-weight: bold; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .footer { margin-top: 20px; font-size: 0.8rem; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🍋 IL TEGGIANESE</h2>
+    <p class="subtitle">Calculadora de Producción - 28.6°</p>
+    
+    <label for="alcohol">Litros de Alcohol (96°):</label>
+    <input type="number" id="alcohol" placeholder="Ej: 6" step="0.1" inputmode="decimal">
+    
+    <button onclick="calcular()">CALCULAR PRODUCCIÓN</button>
+
+    <div id="resultado" class="result">
+        <div class="res-item">💧 Agua necesaria: <span id="res-agua"></span> L</div>
+        <div class="res-item">🍬 Azúcar necesaria: <span id="res-azucar"></span> kg</div>
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+        <div class="res-item">🍶 Volumen final: <span id="res-total"></span> litros</div>
+        
+        <div class="highlight">
+            🍾 Botellas de 750ml a llenar: <span id="res-botellas"></span>
+        </div>
+    </div>
+</div>
+
+<div class="footer">Artesanal • Calidad Superior • Tradición Familiar</div>
+
+<script>
+    function calcular() {
+        const alc = document.getElementById('alcohol').value;
+        if(alc > 0) {
+            // Constantes de la Opción A (28.6°)
+            const agua = alc * 1.85;
+            const azucar = alc * 0.8;
+            
+            // 1kg azúcar disuelto ocupa aprox 0.63 litros
+            const total = parseFloat(alc) + agua + (azucar * 0.63);
+            
+            // Cálculo de botellas de 750ml (0.75 L)
+            const botellas = total / 0.75;
+
+            document.getElementById('res-agua').innerText = agua.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('res-azucar').innerText = azucar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('res-total').innerText = total.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            // Redondeo hacia arriba para las botellas (mejor que sobre una vacía a que falte)
+            document.getElementById('res-botellas').innerText = Math.ceil(botellas);
+            
+            document.getElementById('resultado').style.display = 'block';
+        } else {
+            alert("Por favor, ingresá una cantidad de alcohol válida.");
+        }
+    }
+</script>
+
+</body>
+</html>
