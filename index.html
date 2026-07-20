@@ -37,6 +37,7 @@
     <select id="modo" onchange="cambiarModo()">
         <option value="alcohol">Tengo Litros de Alcohol</option>
         <option value="agua">Tengo Litros de Agua</option>
+        <option value="almibar">Tengo Litros de Almíbar</option>
     </select>
 
     <label id="label-input" for="cantidad">Litros de Alcohol (96°):</label>
@@ -45,10 +46,10 @@
     <button onclick="calcular()">CALCULAR PRODUCCIÓN</button>
 
     <div id="resultado" class="result">
-        <div class="res-item" id="row-alcohol" style="display:none;">🍷 Alcohol a agregar: <span id="res-alcohol"></span> L</div>
-        <div class="res-item" id="row-agua" style="display:none;">💧 Agua necesaria: <span id="res-agua"></span> L</div>
-        <div class="res-item">🍬 Azúcar necesaria: <span id="res-azucar"></span> kg</div>
-        <div class="res-item">🍯 Almíbar resultante: <span id="res-almibar"></span> L</div>
+        <div class="res-item" id="row-alcohol">🍷 Alcohol a agregar: <span id="res-alcohol"></span> L</div>
+        <div class="res-item" id="row-agua">💧 Agua necesaria: <span id="res-agua"></span> L</div>
+        <div class="res-item" id="row-azucar">🍬 Azúcar necesaria: <span id="res-azucar"></span> kg</div>
+        <div class="res-item" id="row-almibar">🍯 Almíbar resultante: <span id="res-almibar"></span> L</div>
         <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
         <div class="res-item">🍶 Volumen final: <span id="res-total"></span> L</div>
         
@@ -69,10 +70,14 @@
         if(modo === 'alcohol') {
             label.innerText = 'Litros de Alcohol (96°):';
             input.placeholder = 'Ej: 6';
-        } else {
+        } else if (modo === 'agua') {
             label.innerText = 'Litros de Agua:';
             input.placeholder = 'Ej: 30';
+        } else {
+            label.innerText = 'Litros de Almíbar:';
+            input.placeholder = 'Ej: 15';
         }
+        
         // Ocultar resultados si se cambia el modo para evitar confusiones
         document.getElementById('resultado').style.display = 'none';
         input.value = '';
@@ -94,39 +99,33 @@
 
             if (modo === 'alcohol') {
                 alc = cantidad;
-                // Por cada 1 L de alcohol son 2.2 L de almíbar
                 vol_almibar = alc * 2.2;
-                // Sabiendo el almíbar total, calculamos el agua que lo compone
                 agua = vol_almibar / factor_almibar_agua;
-                // Sabiendo el agua, calculamos el azúcar correspondiente a la proporción
                 azucar = agua * ratio_azucar_agua;
-            } else {
+            } else if (modo === 'agua') {
                 agua = cantidad;
-                // Calculamos el azúcar usando la proporción 17kg cada 30L
                 azucar = agua * ratio_azucar_agua;
-                // Sumamos el volumen real que ocupará la mezcla de agua y azúcar
                 vol_almibar = agua + (azucar * factor_volumen_azucar);
-                // Si cada litro de alcohol requiere 2.2L de almíbar, despejamos el alcohol
                 alc = vol_almibar / 2.2;
+            } else if (modo === 'almibar') {
+                vol_almibar = cantidad;
+                alc = vol_almibar / 2.2;
+                agua = vol_almibar / factor_almibar_agua;
+                azucar = agua * ratio_azucar_agua;
             }
 
             // Totales
             total = alc + vol_almibar;
             botellas = total / 0.75;
 
-            // Lógica para mostrar/ocultar los campos dependiendo de qué se ingresó
-            if (modo === 'alcohol') {
-                document.getElementById('row-alcohol').style.display = 'none';
-                document.getElementById('row-agua').style.display = 'block';
-            } else {
-                document.getElementById('row-alcohol').style.display = 'block';
-                document.getElementById('row-agua').style.display = 'none';
-            }
+            // Lógica para ocultar el campo que el usuario ya ingresó y mostrar los demás
+            document.getElementById('row-alcohol').style.display = (modo === 'alcohol') ? 'none' : 'block';
+            document.getElementById('row-agua').style.display = (modo === 'agua') ? 'none' : 'block';
+            document.getElementById('row-almibar').style.display = (modo === 'almibar') ? 'none' : 'block';
 
             // Inserción de datos en el DOM con formato local
-            if (modo !== 'alcohol') document.getElementById('res-alcohol').innerText = alc.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            if (modo !== 'agua') document.getElementById('res-agua').innerText = agua.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            
+            document.getElementById('res-alcohol').innerText = alc.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('res-agua').innerText = agua.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('res-azucar').innerText = azucar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('res-almibar').innerText = vol_almibar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('res-total').innerText = total.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
